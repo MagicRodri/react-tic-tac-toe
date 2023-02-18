@@ -1,12 +1,41 @@
 import React,{useState} from 'react';
 
+export default function Game(){
+  const [history,setHistory] = useState([Array(9).fill(null)]);
+  const [stepNumber,setStepNumber] = useState(0);
+  const currentSquares = history[stepNumber];
+  const xIsNext = stepNumber%2===0;
+  function handlePlay(newSquares){
+    setHistory([...history.slice(0,stepNumber+1),newSquares]);
+    setStepNumber(stepNumber+1);
+  }
+  function jumpTo(move){
+    setStepNumber(move);
+  }
+  const movesHistory = history.map((squares,move)=>{
+    const description = move ? `Go to move #${move}` : 'Go to game start';
+    return (
+      <li key={move}>
+        <button onClick={()=>{jumpTo(move)}}>{description}</button>
+      </li>
+    );
+  });
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+      </div>
+      <div className="game-info">
+        <ol>{movesHistory}</ol>
+      </div>
+    </div>
+  );
+}
 /**
  * Board component
  * @returns 
  */
-export default function Board() {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [xIsNext, setXIsNext] = useState(true);
+function Board({squares,xIsNext,onPlay}) {
   const winner = getWinner(squares);
   function handleClick(buttonIndex) {
     const newSquares = [...squares];
@@ -18,12 +47,11 @@ export default function Board() {
     } else {
       newSquares[buttonIndex] = 'O';
     }
-    setXIsNext(!xIsNext);
-    setSquares(newSquares);
+    onPlay(newSquares);
   }
   return (
     <div>
-        <p className='status'>{status(winner,xIsNext)}</p>
+        <p className='status'>{showStatus(winner,xIsNext)}</p>
       <div>
         <div className='board-row'>
           <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
@@ -58,11 +86,11 @@ function Square(props) {
   );
 }
 
-function status(winner, xIsNext) {
+function showStatus(winner, xIsNext) {
   if (winner) {
     return 'Winner: ' + winner;
   }
-  return 'Next player: ' + xIsNext ? 'X' : 'O';
+  return 'Next player: ' + (xIsNext ? 'X' : 'O');
 }
 
 /**
