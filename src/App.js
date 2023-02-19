@@ -58,7 +58,7 @@ function Board({squares,xIsNext,onPlay}) {
     onPlay(newSquares);
   }
   const renderSquare = (i) => {
-    return <Square value={squares[i]} onSquareClick={() => handleClick(i)} />;
+    return <Square key={i} value={squares[i]} onSquareClick={() => handleClick(i)} />;
   };
   const renderBoard = () => {
     const board = [];
@@ -67,7 +67,7 @@ function Board({squares,xIsNext,onPlay}) {
       for (let j = 0; j < 3; j++) {
         row.push(renderSquare(i * 3 + j));
       }
-      board.push(<div className='board-row'>{row}</div>);
+      board.push(<div key={i} className='board-row'>{row}</div>);
     }
     return board;
   };
